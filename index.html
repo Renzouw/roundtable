@@ -464,7 +464,7 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
 @media (max-width: 880px) {
   .body { font-size: calc(var(--read-size, 16px) - .5px); line-height: 1.68; }
   .app { grid-template-columns: 1fr; }
-  aside { position: fixed; inset: 0 auto 0 0; width: min(340px, 88vw); z-index: 20; transform: translateX(-102%); transition: transform .25s cubic-bezier(.2,.8,.3,1); box-shadow: var(--shadow-2); }
+  aside { position: fixed; inset: 0 auto 0 0; width: min(360px, 88vw); z-index: 20; transform: translateX(-102%); transition: transform .25s cubic-bezier(.2,.8,.3,1); box-shadow: var(--shadow-2); }
   aside.show { transform: none; }
   .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 19; opacity: 0; pointer-events: none; transition: opacity .2s; }
   aside.show + .scrim { opacity: 1; pointer-events: auto; }
@@ -554,6 +554,38 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
   /* settings fields: equal, finger-sized */
   #side input[type=text], #side input[type=number], #side input[type=password], #side select, .fields > .field > input, .fields > .field > select { height: 44px; min-height: 44px; padding-top: 0; padding-bottom: 0; }
   #side textarea { padding: 10px 12px; }
+}
+/* sidebar on phones: one consistent type scale around the 16px fields (16px stops iPhones zooming in) */
+@media (max-width: 880px) {
+  aside { padding-left: 16px; padding-right: 16px; gap: 28px; }
+  #side .label { font-size: 11px; letter-spacing: .13em; margin-bottom: 14px; }
+  #side .hint { font-size: 13.5px; line-height: 1.5; }
+  #side .field label { font-size: 13.5px; margin-bottom: 6px; }
+  #side .field + .field, #side .fields + .field, #side .field + .fields, #side .pbody .field { margin-top: 14px; }
+  #side .fields { gap: 12px; }
+  #side .seg button { font-size: 15px; }
+  #side .seg { border-radius: 12px; }
+  #side .check { font-size: 15px; gap: 14px; }
+  #side .btn.sm, #presetSel { font-size: 14px; }
+  #presetSel { width: 118px !important; font-size: 16px !important; }
+  #side .tag { font-size: 10px; padding: 3px 6px; }
+  /* participant cards */
+  #side .phead { padding: 12px 14px; gap: 12px; }
+  #side .phead .av { width: 36px; height: 36px; }
+  #side .pname { font-size: 15.5px; }
+  #side .pmodel { font-size: 12.5px; margin-top: 3px; }
+  #side .pbody { padding: 4px 14px 16px; }
+  #side .card-actions { margin-top: 16px; }
+  #side .pausebar { font-size: 13.5px; padding: 10px 14px 11px; }
+  #side .pausebar button { font-size: 14px; }
+  #side [data-hint] { font-size: 13px; }
+  #side [data-f=model] { font-size: 16px !important; }   /* below 16px, iPhones zoom the page when you tap the field */
+  /* install card */
+  #side .install-card { padding: 14px; gap: 12px 14px; grid-template-columns: 44px 1fr; }
+  #side .install-card img { width: 44px; height: 44px; }
+  #side .install-card b { font-size: 15.5px; }
+  #side .install-card span { font-size: 13.5px; }
+  #side .logo h1 { font-size: 28px; }
 }
 /* touch screens: actions appear when you tap a message; everything tappable is finger-sized */
 @media (hover: none) {
@@ -1081,7 +1113,7 @@ function renderParticipants() {
           <div class="field"><label>Temperature</label><input type="number" data-f="temp" min="0" max="2" step="0.1" value="${esc(p.temp)}" placeholder="default"></div>
         </div>
         <div class="field"><label>Persona, role or stance <span style="color:var(--text-3);font-weight:400">optional</span></label>
-          <textarea data-f="persona" rows="3" placeholder="You argue FOR the motion · You're a skeptical economist · You review the code">${esc(p.persona)}</textarea></div>
+          <textarea data-f="persona" rows="3" placeholder="e.g. You argue FOR the motion">${esc(p.persona)}</textarea></div>
         <div class="card-actions">
           <div style="display:flex;gap:4px">
             <button class="btn sm" data-act="test" title="Send a tiny test request">${icon('bolt', 'style="width:13px;height:13px"')}Test</button>
@@ -1216,7 +1248,10 @@ function showModelHint(card, p) {
   const hint = card.querySelector('[data-hint=model]'), c = modelCache[cacheKey(p)];
   if (!hint) return;
   if (!c) { hint.className = 'hint'; hint.textContent = ''; return; }
-  if (c.error) { hint.className = 'hint'; hint.textContent = `Couldn't load the model list (${c.error.slice(0, 120)}). Showing suggestions only.`; return; }
+  if (c.error) {
+    const why = c.error.replace(/^.*?error \d+:\s*/i, '').split(/(?<=\.)\s/)[0].replace(/\.$/, '').slice(0, 90);
+    hint.className = 'hint'; hint.textContent = `Couldn't load the model list: ${why}. Showing suggestions only.`; return;
+  }
   if (c.list.includes(p.model)) { hint.className = 'hint ok'; hint.textContent = `✓ Available · ${c.list.length} models to choose from`; }
   else { hint.className = 'hint bad'; hint.textContent = `"${p.model}" isn't one of this provider's ${c.list.length} models. Start typing to pick one.`; }
 }
