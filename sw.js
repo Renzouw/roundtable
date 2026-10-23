@@ -2,7 +2,7 @@
 // It only caches the app itself (page, icons, fonts, the two CDN libraries).
 // Calls to AI providers are never touched or cached.
 
-const VERSION = 'roundtable-v1';
+const VERSION = 'roundtable-v2';
 const SHELL = [
   './',
   './index.html',

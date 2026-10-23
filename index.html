@@ -277,7 +277,6 @@ main { display: flex; flex-direction: column; min-width: 0; height: 100vh; heigh
 .who .tag { align-self: center; }
 .acts { margin-left: auto; display: flex; gap: 2px; opacity: 0; transition: opacity .15s; flex: none; }
 .msg:hover .acts, .msg:focus-within .acts { opacity: 1; }
-@media (hover: none) { .acts { opacity: .8; } }
 .acts button { border: 0; background: transparent; color: var(--text-3); padding: 4px; border-radius: 6px; display: grid; place-items: center; }
 .acts button:hover { color: var(--text); background: var(--surface-2); }
 .acts button svg.i { width: 14px; height: 14px; }
@@ -410,11 +409,12 @@ main { display: flex; flex-direction: column; min-width: 0; height: 100vh; heigh
 .mention:hover { color: var(--text); border-color: var(--line-2); background: var(--surface-2); }
 .composer textarea { border: 0; background: transparent; box-shadow: none; resize: none; padding: 10px 16px 4px; min-height: 52px; max-height: 220px; font-size: 14.5px; }
 .composer textarea:focus { box-shadow: none; }
+.composer textarea:focus-visible { outline: none; }
 .composer-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 8px 8px 16px; }
 .status { font-size: 12.5px; color: var(--text-3); display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--accent)); flex: none; animation: blink 1.2s infinite; }
 .status kbd { font: 11px var(--mono); border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--text-2); }
-.foot-actions { display: flex; gap: 6px; align-items: center; }
+.foot-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; }
 .send { border-radius: 11px; padding: 7px 14px; }
 
 /* dialog */
@@ -472,7 +472,7 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
   .topbar { padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); gap: 6px 8px; flex-wrap: wrap; }
   .chatpick { flex: 1 1 calc(100% - 48px); }
   .chat-title { max-width: none; }
-  .top-actions { flex-basis: 100%; justify-content: flex-end; gap: 4px; }
+  .top-actions { flex-basis: 100%; gap: 2px; }
   .seats, .divider { display: none; }
   .thread { padding: 22px 16px 16px; }
   .composer-wrap { padding: 6px max(12px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
@@ -481,11 +481,98 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
   .drawer-foot { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   /* iPhone zooms into any text box under 16px; keep them all at 16px on touch screens */
   input[type=text], input[type=password], input[type=number], select, textarea, .composer textarea { font-size: 16px; }
-  .starters { grid-template-columns: 1fr; }
-  .empty h2 { font-size: 32px; }
+  /* start screen: smaller table, tighter text, two compact columns of examples */
+  .empty { padding: 4px 0 0; }
+  .table-wrap { transform: scale(.78); margin: -16px 0 6px; }
+  .empty h2 { font-size: 29px; margin-bottom: 6px; }
+  .empty p { font-size: 14.5px; line-height: 1.5; padding: 0 6px; }
+  .starters { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+  .starter { padding: 10px 12px; font-size: 13.5px; line-height: 1.35; border-radius: 11px; }
+  .starter small { font-size: 9.5px; margin-bottom: 5px; }
+  /* composer: one swipeable row of @mentions, slimmer text box */
+  .composer { border-radius: 16px; }
+  .composer:focus-within { box-shadow: var(--shadow-2), 0 0 0 3px var(--accent-soft); }
+  .mentions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 8px 10px 0; gap: 6px;
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .mentions::-webkit-scrollbar { display: none; }
+  .mention { flex: none; }
+  .composer textarea { min-height: 44px; padding: 8px 14px 2px; }
+  .composer-foot { padding: 4px 6px 6px 12px; flex-wrap: wrap; row-gap: 2px; }
+  .status:has(.dot) { flex-basis: 100%; white-space: normal; line-height: 1.4; padding: 2px 0; }   /* messages get their own line */
+  /* top bar: the action row only appears once there's a conversation to act on */
+  .chat-empty .top-actions { display: none; }
+  /* messages: full names over model ids, a slimmer avatar column, quieter action icons */
+  .msg { gap: 11px; }
+  .msg .av.lg { width: 32px; height: 32px; }
+  .verdict-av { width: 32px; height: 32px; }
+  .msg.ai:not(.verdict):not(.positions) .who .model { display: none; }
+  .who .name { max-width: none; }
+  .top-actions { justify-content: flex-start; margin: 0 -4px; }
+  .top-actions .btn { padding: 6px 9px; }
+  .top-actions #exportBtn { margin-left: auto; }
   .status:not(:has(.dot)) { display: none; }
 }
 @media (max-width: 400px) { .top-actions #summaryBtn span { display: none; } }
+/* ===== phone polish (UX review) ===== */
+.side-close { display: none; }
+@media (max-width: 880px) {
+  .side-close { display: inline-flex; }
+  /* top bar: icon + count for Chats so the title gets the room */
+  .hist-btn span { display: none; }
+  .hist-btn { padding: 6px 9px; }
+  /* composer: one line to start, grows as you type; "Another round" only once there's a conversation */
+  .composer textarea { min-height: 40px; padding: 9px 14px 3px; }
+  .chat-empty #continueBtn { display: none; }
+  /* replies: small avatar beside the name, text uses the full width */
+  .msg.ai:not(.mod):not(.verdict):not(.positions):not(.noted) { display: grid; grid-template-columns: 26px 1fr; column-gap: 9px; row-gap: 3px; }
+  .msg.ai:not(.mod):not(.verdict):not(.positions):not(.noted) > .av { width: 26px; height: 26px; grid-area: 1 / 1; align-self: center; }
+  .msg.ai:not(.mod):not(.verdict):not(.positions):not(.noted) > .content { display: contents; }
+  .msg.ai:not(.mod):not(.verdict):not(.positions):not(.noted) .who { grid-area: 1 / 2; margin: 0; align-items: center; min-height: 26px; }
+  .msg.ai:not(.mod):not(.verdict):not(.positions):not(.noted) .body { grid-column: 1 / -1; grid-row: 2; }
+  /* cards (moderator, verdict, positions) span the full width; their header says who it is */
+  .msg.mod, .msg.verdict, .msg.positions { display: block; }
+  .msg.mod > .av, .msg.verdict > .verdict-av, .msg.positions > .verdict-av { display: none; }
+  .msg.mod .content { padding: 12px 14px 13px; }
+  .msg.verdict .content, .msg.positions .content { padding: 14px 14px 16px; }
+  /* slightly tighter reading rhythm on a small screen */
+  .body { line-height: 1.65; }
+  .body p { margin-bottom: .8em; }
+  .body li { margin: .3em 0; }
+  .thread { gap: 22px; }
+  /* verdict scores: name + score on one line, full-width bar, categories on one line */
+  .vc-row { grid-template-columns: 22px 1fr auto; grid-template-areas: "av name score" "bar bar bar" "crit crit crit"; row-gap: 5px; }
+  .vc-row > .av { grid-area: av; }
+  .vc-row b { grid-area: name; }
+  .vc-row span { grid-area: score; white-space: nowrap; }
+  .vc-row .vc-bar { grid-area: bar; }
+  .vc-row .vc-crit { grid-area: crit; margin-top: 0; font-family: var(--sans); font-size: 11.5px; }
+  .vc-scores { gap: 14px; }
+  .vc-name { font-size: 28px; }
+  /* positions: less nested padding */
+  .pos-q { font-size: 19px; margin-bottom: 12px; }
+  .pos-card { padding: 11px 12px 12px; }
+  /* settings fields: equal, finger-sized */
+  #side input[type=text], #side input[type=number], #side input[type=password], #side select, .fields > .field > input, .fields > .field > select { height: 44px; min-height: 44px; padding-top: 0; padding-bottom: 0; }
+  #side textarea { padding: 10px 12px; }
+}
+/* touch screens: actions appear when you tap a message; everything tappable is finger-sized */
+@media (hover: none) {
+  .acts { display: none; }
+  .msg.show-acts .acts { display: flex; opacity: 1; }
+  .msg.show-acts .content { position: relative; }
+  .hist-del { opacity: .55; }
+}
+@media (pointer: coarse) {
+  #side .btn.icon, .topbar .btn.icon, #installDismiss { min-width: 40px; min-height: 40px; }
+  #presetSel, #addP, .card-actions .btn.sm { min-height: 38px; }
+  .card-actions .btn.sm.icon { min-width: 38px; }
+  .switch { transform: scale(1.5); margin: 0 8px; }   /* ~27x45px, close to a native phone switch */
+  .check { min-height: 40px; }
+  .pausebar button { padding: 10px 2px; margin: -10px 0; }
+  .acts button { padding: 8px; }
+  .hist-del { padding: 9px; top: 4px; right: 2px; }
+  .seg button { padding: 10px 4px; }
+}
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -529,6 +616,7 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
       <div class="row" style="display:flex;gap:2px">
         <button class="btn ghost icon" id="themeBtn" title="Toggle light / dark"><svg class="i"><use href="#i-moon"/></svg></button>
         <button class="btn ghost icon" id="keysBtn" title="API keys"><svg class="i"><use href="#i-key"/></svg></button>
+        <button class="btn ghost icon side-close" id="sideClose" title="Close" aria-label="Close settings"><svg class="i"><use href="#i-x"/></svg></button>
       </div>
     </div>
 
@@ -614,11 +702,11 @@ dialog h3 { font: 400 28px/1.1 var(--serif); margin: 0 0 6px; }
     <div class="composer-wrap">
       <div class="composer">
         <div class="mentions" id="mentions"></div>
-        <textarea id="input" rows="2" placeholder="Give the table a topic, a question or a task…"></textarea>
+        <textarea id="input" rows="1" placeholder="Give the table a topic, a question or a task…"></textarea>
         <div class="composer-foot">
           <div class="status" id="status"></div>
           <div class="foot-actions">
-            <button class="btn ghost sm" id="continueBtn" title="Let them keep going without adding a message"><svg class="i"><use href="#i-loop"/></svg>Another round</button>
+            <button class="btn ghost sm" id="continueBtn" title="Let them keep going without adding a message"><svg class="i"><use href="#i-loop"/></svg><span>Another round</span></button>
             <button class="btn sm danger" id="stopBtn" style="display:none"><svg class="i"><use href="#i-stop"/></svg>Stop</button>
             <button class="btn primary send" id="sendBtn" title="Send (Ctrl+Enter)"><svg class="i"><use href="#i-send"/></svg>Send</button>
           </div>
@@ -1214,7 +1302,7 @@ function renderHistory() {
       if (m) { hit = true; const t = plain(m.text), i = t.toLowerCase().indexOf(q); snip = `${m.name}: ${i > 40 ? '…' + t.slice(i - 30) : t}`; }
     }
     if (!hit) return null;
-    if (!snip) { const last = [...c.messages].reverse().find(m => m.text); snip = last ? `${last.name}: ${plain(last.text)}` : 'Empty, start typing below'; }
+    if (!snip) { const last = [...c.messages].reverse().find(m => m.text && !m.positions && !m.verdict && !m.summary); snip = last ? `${last.name}: ${plain(last.text)}` : 'Empty, start typing below'; }
     const seen = new Map();
     for (const m of c.messages) { const k = String(m.name).replace(/ · summary$/, ''); if (m.role !== 'user' && !seen.has(k)) seen.set(k, m); }
     const avs = [...seen.values()].slice(0, 4).map(m => avatar({ name: m.name, color: m.color, provider: m.provider, model: m.meta })).join('');
@@ -1706,6 +1794,7 @@ function syncButtons() {
   document.body.classList.toggle('busy', running);   // lineup changes wait until the run ends
   $('#presetSel').disabled = running;
   const empty = !msgs().length;   // these do nothing until something has been said
+  document.body.classList.toggle('chat-empty', empty);
   for (const id of ['continueBtn', 'summaryBtn', 'verdictBtn', 'positionsBtn', 'exportBtn', 'deleteChatBtn']) $('#' + id).disabled = running || empty;
   $('#stopBtn').style.display = running ? '' : 'none';
   $('#sendBtn').style.display = running ? 'none' : '';
@@ -1905,7 +1994,7 @@ function renderVerdict(v) {
   const reason = v.kind === 'judge' && v.reasons[0].reason ? `<p class="vc-reason">${esc(v.reasons[0].reason)}</p>` : '';
   const rows = v.rows.map(r => `
     <div class="vc-row ${r.id === v.winnerId ? 'top' : ''}" style="--c:${safeColor(r.color)}">
-      ${avatar(r)}<b>${esc(r.name)}</b><div class="vc-bar"><i style="width:${Math.max(0, Math.min(100, num(r.total) / max * 100)).toFixed(1)}%"></i></div><span>${num(r.total).toFixed(1)}${v.kind === 'jury' ? ` · ${num(r.votes)}v` : ''}</span>
+      ${avatar(r)}<b>${esc(r.name)}</b><div class="vc-bar"><i style="width:${Math.max(0, Math.min(100, num(r.total) / max * 100)).toFixed(1)}%"></i></div><span>${num(r.total).toFixed(1)}${v.kind === 'jury' ? ` · ${num(r.votes)} vote${num(r.votes) === 1 ? '' : 's'}` : ''}</span>
       <div class="vc-crit">${CRITERIA.map(c => `${c} ${num(r.avg?.[c]).toFixed(1)}`).join(' · ')}</div>
     </div>`).join('');
   const votes = v.kind === 'jury' ? `<div class="vc-section">The jury</div><div class="vc-votes">${v.reasons.map(r => `
@@ -2213,6 +2302,25 @@ $('#exportBtn').addEventListener('click', exportMd);
 $('#plist').addEventListener('focusout', () => setTimeout(() => {
   if (sidebarDirty && !$('#plist').contains(document.activeElement)) { sidebarDirty = false; renderParticipants(); }
 }, 0));
+// When the phone keyboard opens (the window shrinks), stay pinned to the newest message if you were reading there.
+{
+  let pinned = true;
+  $('#log').addEventListener('scroll', () => { const l = $('#log'); pinned = l.scrollHeight - l.scrollTop - l.clientHeight < 120; }, { passive: true });
+  const keepPinned = () => { if (pinned && msgs().length) { const l = $('#log'); l.style.scrollBehavior = 'auto'; l.scrollTop = l.scrollHeight; l.style.scrollBehavior = ''; } };
+  window.addEventListener('resize', keepPinned);
+  window.visualViewport?.addEventListener('resize', keepPinned);
+}
+// Touch screens have no hover: tap a message to show its Copy / Retry / Delete, tap again (or another) to hide.
+$('#msgs').addEventListener('click', e => {
+  if (!matchMedia('(hover: none)').matches || e.target.closest('a, button, .acts, input, textarea')) return;
+  if (getSelection && String(getSelection()).length) return;   // selecting text, not tapping
+  const msg = e.target.closest('.msg');
+  if (!msg) return;
+  const wasOpen = msg.classList.contains('show-acts');
+  document.querySelectorAll('.msg.show-acts').forEach(x => x.classList.remove('show-acts'));
+  if (!wasOpen) msg.classList.add('show-acts');
+});
+$('#sideClose').addEventListener('click', () => $('#side').classList.remove('show'));
 $('#historyBtn').addEventListener('click', openHistory);
 $('#historyClose').addEventListener('click', closeHistory);
 $('#history').addEventListener('click', e => { if (e.target.id === 'history') closeHistory(); });
